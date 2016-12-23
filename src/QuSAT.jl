@@ -24,7 +24,7 @@ immutable Bits <: AbstractBits
     Bits(n::Integer) = new(n)
 end
 
-function call(b::Bits,n::Integer)
+function (b::Bits)(n::Integer)
     @assert n>0
     return (b.value>>(n-1))&1
 end
@@ -52,7 +52,7 @@ immutable TruthTable
     value::UInt32
 end
 
-function call(truthtable::TruthTable,index::Integer)
+function (truthtable::TruthTable)(index::Integer)
     return (truthtable.value>>index)&1
 end
 
@@ -71,7 +71,7 @@ Clause(table::TruthTable,ids::Integer...) = Clause{length(ids)}(table,[ids...])
 Clause(num::Integer,table::TruthTable,ids::Integer...) = Clause{num}(table,[ids...])
 Clause(num::Integer,table::Integer,ids::Integer...) = Clause{num}(TruthTable(table),[ids...])
 
-function call{N}(clause::Clause{N},assign::Integer)
+function (clause::Clause{N}){N}(assign::Integer)
     return clause.table(assign)
 end
 
@@ -94,7 +94,7 @@ end
 ECClause(ids::Vector{Int}) = ECClause{length(ids)}(ids)
 ECClause(ids::Integer...) = ECClause{length(ids)}([ids...])
 
-function call{N}(c::ECClause{N},assign::Integer)
+function (c::ECClause{N}){N}(assign::Integer)
     res = 0
     for i = 1:N
         res += assign&1
@@ -133,7 +133,7 @@ Instance{N}(num::Integer,clause::ECClause{N},clauses::ECClause{N}...) = Instance
 Instance{N}(num::Integer,clauses::AbstractVector{Clause{N}}) = Instance{num,N}(clauses)
 Instance{N}(num::Integer,clause::Clause{N},clauses::Clause{N}...) = Instance(num,[clause,clauses...])
 
-function call{M,N}(clauses::Instance{M,N},assign::Bits)
+function (clauses::Instance{M,N}){M,N}(assign::Bits)
     res = 1
     for clause in clauses.c
         assignment = 0
